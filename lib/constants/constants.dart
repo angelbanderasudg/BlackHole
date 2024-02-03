@@ -24,4 +24,5 @@ const hiveBoxes = [
   {'name': 'Favorite Songs', 'limit': false},
   {'name': 'cache', 'limit': true},
   {'name': 'ytlinkcache', 'limit': true},
+  {'name': 'Songs Speed', 'limit': false},
 ];

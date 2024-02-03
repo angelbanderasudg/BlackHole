@@ -462,6 +462,16 @@ class _MusicPlaybackPageState extends State<MusicPlaybackPage> {
               keyName: 'cacheSong',
               defaultValue: false,
             ),
+            BoxSwitchTile(
+              title: Text(
+                'Recordar la velocidad de reproducción',
+              ),
+              subtitle: Text(
+                'Mantener la velocidad de reproducción de la canción de forma individual',
+              ),
+              keyName: 'songSpeed',
+              defaultValue: false,
+            ),
           ],
         ),
       ),

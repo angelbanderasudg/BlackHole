@@ -54,6 +54,7 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
   late String preferredMobileQuality;
   late List<int> preferredCompactNotificationButtons = [1, 2, 3];
   late bool resetOnSkip;
+  late bool remmeberSongSpeed;
   // late String? stationId = '';
   // late List<String> stationNames = [];
   // late String stationType = 'entity';
@@ -62,6 +63,8 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
 
   Box? downloadsBox =
       Hive.isBoxOpen('downloads') ? Hive.box('downloads') : null;
+  Box? speedBox =
+      Hive.isBoxOpen('Songs Speed') ? Hive.box('Songs Speed') : null;
   final List<String> refreshLinks = [];
   bool jobRunning = false;
 
@@ -195,6 +198,18 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
         Hive.box('settings').get('loadStart', defaultValue: true) as bool;
 
     mediaItem.whereType<MediaItem>().listen((item) {
+      remmeberSongSpeed =
+          Hive.box('settings').get('songSpeed', defaultValue: false) as bool;
+      if (remmeberSongSpeed && speedBox != null) {
+        if (speedBox!.containsKey(item.id)) {
+          final songSpeed = speedBox!.get(item.id) as double?;
+          if (songSpeed != null) {
+            setSpeed(songSpeed);
+          }
+        } else {
+          speedBox!.put(item.id, speed.value);
+        }
+      }
       if (count != null) {
         count = count! - 1;
         if (count! <= 0) {
@@ -982,6 +997,9 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
   Future<void> setSpeed(double speed) async {
     this.speed.add(speed);
     await _player!.setSpeed(speed);
+    if (remmeberSongSpeed && speedBox != null) {
+      speedBox!.put(mediaItem.value?.id, speed);
+    }
   }
 
   @override
