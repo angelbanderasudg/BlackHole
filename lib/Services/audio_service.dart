@@ -73,6 +73,7 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
   @override
   final BehaviorSubject<double> speed = BehaviorSubject.seeded(1.0);
   final _mediaItemExpando = Expando<MediaItem>();
+  late MediaItem _currentMediaItem;
 
   Stream<List<IndexedAudioSource>> get _effectiveSequence => Rx.combineLatest3<
               List<IndexedAudioSource>?,
@@ -195,6 +196,7 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
         Hive.box('settings').get('loadStart', defaultValue: true) as bool;
 
     mediaItem.whereType<MediaItem>().listen((item) {
+      _currentMediaItem = item;
       if (count != null) {
         count = count! - 1;
         if (count! <= 0) {
@@ -280,6 +282,24 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
         _player!.seek(Duration.zero, index: 0);
       }
     });
+    //For autochanging the song from Youtube and is an ios or mac
+    if (Platform.isIOS || Platform.isMacOS) {
+      _player!.positionStream.listen((position) {
+        final itemIndex =
+            queue.value.indexWhere((item) => item.id == _currentMediaItem.id);
+        if (itemIndex != -1) {
+          final item = queue.value[itemIndex];
+          if (item.genre == 'YouTube' && position >= item.duration!) {
+            if (itemIndex + 1 == queue.value.length) {
+              _player!.pause();
+              _player!.seek(Duration.zero, index: 0);
+            } else {
+              skipToNext();
+            }
+          }
+        }
+      });
+    }
     // Broadcast the current queue.
     _effectiveSequence
         .map(
