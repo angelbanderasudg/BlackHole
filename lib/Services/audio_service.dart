@@ -288,7 +288,8 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
         if (itemIndex != -1) {
           final item = queue.value[itemIndex];
           if (item.genre == 'YouTube' && position >= item.duration!) {
-            if (itemIndex + 1 == queue.value.length) {
+            if (playbackState.value.repeatMode.name == 'None' &&
+                itemIndex + 1 == queue.value.length) {
               _player!.pause();
               _player!.seek(Duration.zero, index: 0);
             } else {
