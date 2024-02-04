@@ -185,6 +185,7 @@ class _MyAppState extends State<MyApp> {
 
     final List recentList =
         Hive.box('cache').get('recentSongs', defaultValue: []) as List;
+
     final CPListTemplate listTemplate = CPListTemplate(
       sections: [
         if (playlistDetails.isNotEmpty)
@@ -227,6 +228,7 @@ class _MyAppState extends State<MyApp> {
 
     _flutterCarplay
         .forceUpdateRootTemplate(); // This makes the CarPlay experience reload on hot reload, useful during development.
+    openNowPlayingCarplay();
 
     // HomeWidget.setAppGroupId('com.shadow.blackhole');
     // HomeWidget.registerBackgroundCallback(backgroundCallback);
@@ -313,6 +315,11 @@ class _MyAppState extends State<MyApp> {
         Logger.root.severe('ERROR in getInitialMedia', error);
       });
     }
+  }
+
+  Future<void> openNowPlayingCarplay() async {
+    await Future.delayed(const Duration(seconds: 1));
+    FlutterCarplay.showSharedNowPlaying();
   }
 
   CPListSection generateCarplayListSection(String header, List<dynamic> songs) {
