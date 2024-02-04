@@ -187,7 +187,7 @@ class _MyAppState extends State<MyApp> {
         Hive.box('cache').get('recentSongs', defaultValue: []) as List;
     final CPListTemplate listTemplate = CPListTemplate(
       sections: [
-        if (playlistNames.isNotEmpty)
+        if (playlistDetails.isNotEmpty)
           CPListSection(
             header: 'Playlists',
             items: [
