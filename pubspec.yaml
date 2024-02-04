@@ -30,6 +30,10 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_archive: ^6.0.0
+  # flutter_carplay: ^1.0.3
+  flutter_carplay:
+    git:
+      url: https://github.com/angelbanderasudg/flutter_carplay.git
   flutter_displaymode: ^0.6.0
   # flutter_downloader: ^1.7.1
   flutter_localizations:

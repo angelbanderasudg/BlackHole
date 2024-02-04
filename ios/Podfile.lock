@@ -48,6 +48,8 @@ PODS:
   - flutter_archive (0.0.1):
     - Flutter
     - ZIPFoundation (= 0.9.13)
+  - flutter_carplay (1.0.3):
+    - Flutter
   - FMDB (2.7.5):
     - FMDB/standard (= 2.7.5)
   - FMDB/standard (2.7.5)
@@ -67,16 +69,16 @@ PODS:
   - ReachabilitySwift (5.0.0)
   - receive_sharing_intent (1.6.7):
     - Flutter
-  - SDWebImage (5.13.0):
-    - SDWebImage/Core (= 5.13.0)
-  - SDWebImage/Core (5.13.0)
+  - SDWebImage (5.18.10):
+    - SDWebImage/Core (= 5.18.10)
+  - SDWebImage/Core (5.18.10)
   - share_plus (0.0.1):
     - Flutter
   - sqflite (0.0.3):
     - Flutter
     - FMDB (>= 2.7.5)
-  - SwiftyBeaver (1.9.5)
-  - SwiftyGif (5.4.3)
+  - SwiftyBeaver (2.0.0)
+  - SwiftyGif (5.4.4)
   - url_launcher_ios (0.0.1):
     - Flutter
   - ZIPFoundation (0.9.13)
@@ -90,6 +92,7 @@ DEPENDENCIES:
   - file_picker (from `.symlinks/plugins/file_picker/ios`)
   - Flutter (from `Flutter`)
   - flutter_archive (from `.symlinks/plugins/flutter_archive/ios`)
+  - flutter_carplay (from `.symlinks/plugins/flutter_carplay/ios`)
   - just_audio (from `.symlinks/plugins/just_audio/ios`)
   - metadata_god (from `.symlinks/plugins/metadata_god/ios`)
   - on_audio_query_ios (from `.symlinks/plugins/on_audio_query_ios/ios`)
@@ -129,6 +132,8 @@ EXTERNAL SOURCES:
     :path: Flutter
   flutter_archive:
     :path: ".symlinks/plugins/flutter_archive/ios"
+  flutter_carplay:
+    :path: ".symlinks/plugins/flutter_carplay/ios"
   just_audio:
     :path: ".symlinks/plugins/just_audio/ios"
   metadata_god:
@@ -161,6 +166,7 @@ SPEC CHECKSUMS:
   file_picker: 15fd9539e4eb735dc54bae8c0534a7a9511a03de
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
   flutter_archive: 1805fdd3a695fd284b43edb53dc35ca843fb761c
+  flutter_carplay: fe777eed6b4b159fcc4be4eada9e6465641202a2
   FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
   just_audio: baa7252489dbcf47a4c7cc9ca663e9661c99aafa
   metadata_god: eceae399d0020475069a5cebc35943ce8562b5d7
@@ -170,14 +176,14 @@ SPEC CHECKSUMS:
   permission_handler_apple: e76247795d700c14ea09e3a2d8855d41ee80a2e6
   ReachabilitySwift: 985039c6f7b23a1da463388634119492ff86c825
   receive_sharing_intent: 9ca20ae908f83c36ddaaaa8c9bd30ce4700495e8
-  SDWebImage: 0327043dbb9533e75f2eff8445b3df0f2ceca6ac
+  SDWebImage: fc8f2d48bbfd72ef39d70e981bd24a3f3be53fec
   share_plus: c3fef564749587fc939ef86ffb283ceac0baf9f5
   sqflite: 31f7eba61e3074736dff8807a9b41581e4f7f15a
-  SwiftyBeaver: 84069991dd5dca07d7069100985badaca7f0ce82
-  SwiftyGif: 6c3eafd0ce693cad58bb63d2b2fb9bacb8552780
+  SwiftyBeaver: 014b0c12065026b731bac80305294f27d63e27f6
+  SwiftyGif: 93a1cc87bf3a51916001cf8f3d63835fb64c819f
   url_launcher_ios: bbd758c6e7f9fd7b5b1d4cde34d2b95fcce5e812
   ZIPFoundation: ae5b4b813d216d3bf0a148773267fff14bd51d37
 
-PODFILE CHECKSUM: a8fdda13e46e7714175a31920f11b7da1a162f85
+PODFILE CHECKSUM: 6fcc62ffafe8908d5d1159ab447bd514689edb83
 
-COCOAPODS: 1.12.1
+COCOAPODS: 1.14.2

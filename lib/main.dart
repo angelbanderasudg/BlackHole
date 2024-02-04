@@ -27,12 +27,14 @@ import 'package:blackhole/Helpers/logging.dart';
 import 'package:blackhole/Helpers/route_handler.dart';
 import 'package:blackhole/Screens/Common/routes.dart';
 import 'package:blackhole/Screens/Player/audioplayer.dart';
+import 'package:blackhole/Services/player_service.dart';
 import 'package:blackhole/constants/constants.dart';
 import 'package:blackhole/constants/languagecodes.dart';
 import 'package:blackhole/providers/audio_service_provider.dart';
 import 'package:blackhole/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_carplay/flutter_carplay.dart';
 import 'package:flutter_displaymode/flutter_displaymode.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -68,6 +70,8 @@ Future<void> main() async {
   await startService();
   runApp(MyApp());
 }
+
+final FlutterCarplay _flutterCarplay = FlutterCarplay();
 
 Future<void> setOptimalDisplayMode() async {
   await FlutterDisplayMode.setHighRefreshRate();
@@ -171,6 +175,59 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
+    final String name =
+        Hive.box('settings').get('name', defaultValue: 'Guest') as String;
+    final List playlistNames =
+        Hive.box('settings').get('playlistNames')?.toList() as List? ??
+            ['Favorite Songs'];
+    final Map playlistDetails =
+        Hive.box('settings').get('playlistDetails', defaultValue: {}) as Map;
+
+    final List recentList =
+        Hive.box('cache').get('recentSongs', defaultValue: []) as List;
+    final CPListTemplate listTemplate = CPListTemplate(
+      sections: [
+        if (playlistNames.isNotEmpty)
+          CPListSection(
+            header: 'Playlists',
+            items: [
+              for (var i = 0; i < playlistNames.length; i++)
+                CPListItem(
+                  accessoryType: CPListItemAccessoryTypes.disclosureIndicator,
+                  text: playlistNames[i] as String,
+                  onPress: (complete, self) {
+                    final playlistSongsTemplate = CPListTemplate(
+                        title: playlistNames[i] as String,
+                        sections: [
+                          generateCarplayListSection(
+                              '',
+                              playlistDetails[playlistNames[i]]['imagesList']
+                                  as List),
+                        ],
+                        systemIcon: 'music.note.list');
+                    FlutterCarplay.push(
+                      template: playlistSongsTemplate,
+                    );
+                    complete();
+                  },
+                  image: playlistDetails[playlistNames[i]]['imagesList']
+                          .first?['image'] as String? ??
+                      'assets/cover.jpg',
+                ),
+            ],
+          ),
+        if (recentList.isNotEmpty)
+          generateCarplayListSection('Ultima sessión', recentList),
+      ],
+      title: name,
+      systemIcon: 'music.house.fill',
+    );
+
+    FlutterCarplay.setRootTemplate(rootTemplate: listTemplate);
+
+    _flutterCarplay
+        .forceUpdateRootTemplate(); // This makes the CarPlay experience reload on hot reload, useful during development.
+
     // HomeWidget.setAppGroupId('com.shadow.blackhole');
     // HomeWidget.registerBackgroundCallback(backgroundCallback);
     final String systemLangCode = Platform.localeName.substring(0, 2);
@@ -256,6 +313,29 @@ class _MyAppState extends State<MyApp> {
         Logger.root.severe('ERROR in getInitialMedia', error);
       });
     }
+  }
+
+  CPListSection generateCarplayListSection(String header, List<dynamic> songs) {
+    return CPListSection(
+      header: header,
+      items: [
+        for (var i = 0; i < songs.length; i++)
+          CPListItem(
+            accessoryType: CPListItemAccessoryTypes.disclosureIndicator,
+            text: songs[i]['title'] as String,
+            onPress: (complete, self) {
+              PlayerInvoke.init(
+                songsList: songs,
+                index: i,
+                isOffline: false,
+              );
+              FlutterCarplay.showSharedNowPlaying();
+              complete();
+            },
+            image: songs[i]['image'] as String? ?? 'assets/cover.jpg',
+          ),
+      ],
+    );
   }
 
   void setLocale(Locale value) {

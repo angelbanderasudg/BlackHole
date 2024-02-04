@@ -319,6 +319,15 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.3.1"
+  flutter_carplay:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: HEAD
+      resolved-ref: e4fd6d3f3edfcc155fe25a225af9dbd8ef44e0fe
+      url: "https://github.com/angelbanderasudg/flutter_carplay.git"
+    source: git
+    version: "1.0.3"
   flutter_displaymode:
     dependency: "direct main"
     description:
