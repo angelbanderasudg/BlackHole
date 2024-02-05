@@ -161,13 +161,14 @@ class MyApp extends StatefulWidget {
       context.findAncestorStateOfType<_MyAppState>()!;
 }
 
-class _MyAppState extends State<MyApp> {
+class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   Locale _locale = const Locale('en', '');
   late StreamSubscription _intentDataStreamSubscription;
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _intentDataStreamSubscription.cancel();
     super.dispose();
   }
@@ -175,57 +176,8 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    final String name =
-        Hive.box('settings').get('name', defaultValue: 'Guest') as String;
-    final List playlistNames =
-        Hive.box('settings').get('playlistNames')?.toList() as List? ??
-            ['Favorite Songs'];
-    final Map playlistDetails =
-        Hive.box('settings').get('playlistDetails', defaultValue: {}) as Map;
 
-    final List recentList =
-        Hive.box('cache').get('recentSongs', defaultValue: []) as List;
-
-    final CPListTemplate listTemplate = CPListTemplate(
-      sections: [
-        if (playlistDetails.isNotEmpty)
-          CPListSection(
-            header: 'Playlists',
-            items: [
-              for (var i = 0; i < playlistNames.length; i++)
-                CPListItem(
-                  accessoryType: CPListItemAccessoryTypes.disclosureIndicator,
-                  text: playlistNames[i] as String,
-                  onPress: (complete, self) {
-                    final playlistSongsTemplate = CPListTemplate(
-                        title: playlistNames[i] as String,
-                        sections: [
-                          generateCarplayListSection(
-                              '',
-                              playlistDetails[playlistNames[i]]['imagesList']
-                                  as List),
-                        ],
-                        systemIcon: 'music.note.list');
-                    FlutterCarplay.push(
-                      template: playlistSongsTemplate,
-                    );
-                    complete();
-                  },
-                  image: playlistDetails[playlistNames[i]]['imagesList']
-                          .first?['image'] as String? ??
-                      'assets/cover.jpg',
-                ),
-            ],
-          ),
-        if (recentList.isNotEmpty)
-          generateCarplayListSection('Ultima sessión', recentList),
-      ],
-      title: name,
-      systemIcon: 'music.house.fill',
-    );
-
-    FlutterCarplay.setRootTemplate(rootTemplate: listTemplate);
-
+    FlutterCarplay.setRootTemplate(rootTemplate: generateCarplayListTemplate());
     _flutterCarplay
         .forceUpdateRootTemplate(); // This makes the CarPlay experience reload on hot reload, useful during development.
     openNowPlayingCarplay();
@@ -315,11 +267,73 @@ class _MyAppState extends State<MyApp> {
         Logger.root.severe('ERROR in getInitialMedia', error);
       });
     }
+
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      FlutterCarplay.setRootTemplate(
+          rootTemplate: generateCarplayListTemplate());
+      FlutterCarplay.showSharedNowPlaying();
+    }
   }
 
   Future<void> openNowPlayingCarplay() async {
     await Future.delayed(const Duration(seconds: 1));
     FlutterCarplay.showSharedNowPlaying();
+  }
+
+  CPListTemplate generateCarplayListTemplate() {
+    final String name =
+        Hive.box('settings').get('name', defaultValue: 'Guest') as String;
+    final List playlistNames =
+        Hive.box('settings').get('playlistNames')?.toList() as List? ??
+            ['Favorite Songs'];
+    final Map playlistDetails =
+        Hive.box('settings').get('playlistDetails', defaultValue: {}) as Map;
+
+    final List recentList =
+        Hive.box('cache').get('recentSongs', defaultValue: []) as List;
+
+    return CPListTemplate(
+      sections: [
+        if (playlistDetails.isNotEmpty)
+          CPListSection(
+            header: 'Playlists',
+            items: [
+              for (var i = 0; i < playlistNames.length; i++)
+                CPListItem(
+                  accessoryType: CPListItemAccessoryTypes.disclosureIndicator,
+                  text: playlistNames[i] as String,
+                  onPress: (complete, self) {
+                    final playlistSongsTemplate = CPListTemplate(
+                        title: playlistNames[i] as String,
+                        sections: [
+                          generateCarplayListSection(
+                              '',
+                              playlistDetails[playlistNames[i]]['imagesList']
+                                  as List),
+                        ],
+                        systemIcon: 'music.note.list');
+                    FlutterCarplay.push(
+                      template: playlistSongsTemplate,
+                    );
+                    complete();
+                  },
+                  image: playlistDetails[playlistNames[i]]['imagesList']
+                          .first?['image'] as String? ??
+                      'assets/cover.jpg',
+                ),
+            ],
+          ),
+        if (recentList.isNotEmpty)
+          generateCarplayListSection('Ultima sessión', recentList),
+      ],
+      title: name,
+      systemIcon: 'music.house.fill',
+    );
   }
 
   CPListSection generateCarplayListSection(String header, List<dynamic> songs) {
