@@ -276,7 +276,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     if (state == AppLifecycleState.resumed) {
       FlutterCarplay.setRootTemplate(
           rootTemplate: generateCarplayListTemplate());
-      FlutterCarplay.showSharedNowPlaying();
+      openNowPlayingCarplay();
     }
   }
 
